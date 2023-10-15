@@ -33,4 +33,53 @@
 
 ## Lämpötilan lukija
 
-- Simppeli
+### .env
+
+- Sleep time
+- Lora-verkon clientin osote
+- Web-palvelimen osote
+- Käytetäänkö loraa, webbiä vai molempia
+
+### Main loop
+
+- Tarkistaa annetut lämpötilarajat
+- Lukee anturilta lämpötilan ja tallentaa sen muistiin
+- Tarkistaa onko lämpötila annettujen parametrien välissä
+- Sammuttaa kaikki LEDit
+- Sytyttää asianmukaisen LEDin
+- Odotetaan .envissä määritelty aika
+
+### Async api
+
+- Tämä vois olla oma softa, mutta tälleen vältetään tyhjänpäivänen tiedostojen kirjottelu ja lukeminen
+
+#### GET `/temperature`
+
+- Lue globaalit muuttujat `current_temperature`, `lower_bound` ja `upper_bound`
+- Palauta json
+
+```json
+{
+  "temperature": 12.34,
+  "lower_bound": 10.23,
+  "upper_bound": 23.45
+}
+```
+
+#### POST `/values`
+
+- Query parametreina
+```json
+{
+  "lower_bound": 12.34,
+  "upper_bound": 23.45
+}
+```
+- Tallenna arvot globaaleihin muuttujiin `lower_bound` ja `upper_bound`
+
+---
+
+## Web-palvelin
+
+- `/` get endpoint
+  - Liipasee get kutsun 
