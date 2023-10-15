@@ -35,9 +35,8 @@
         const apiUrl = `http://localhost:8081/bounds?lower=${newLowerBound}&upper=${newUpperBound}`;
 
         // Send the updated bounds to the API using the modified URL
-        fetch(apiUrl, {
-            method: 'POST'
-        })
+        // TODO: If the post fails for any reason the website won't tell about it to the user
+        fetch(apiUrl, {method: 'POST'})
             .then(response => response.json())
             .then(_ => {
                 // Update the displayed bounds (or handle any error responses from the API)
