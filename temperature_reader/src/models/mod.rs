@@ -13,7 +13,7 @@ pub struct Bounds {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct TempAndBounds {
+pub struct TemperatureAndBounds {
     pub t: Temperature,
     pub b: Bounds,
 }

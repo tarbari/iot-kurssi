@@ -7,7 +7,7 @@ use tokio::time::{sleep, Duration};
 use warp::Filter;
 use warp::reply::Json;
 use crate::env_loader::Config;
-use crate::models::{Temperature, Bounds, TempAndBounds};
+use crate::models::{Temperature, Bounds, TemperatureAndBounds};
 
 use rand::Rng;
 
@@ -59,12 +59,12 @@ async fn main() {
         read_temperature_loop(temp_storage_clone, conf.interval).await;
     });
 
-    // API endpoint
+    // API endpoints
     let temperature_route = warp::path!("temperature")
         .map(move || {
             let temp = temperature_storage.lock().unwrap().clone(); // Easier to clone than to borrow
             let bounds = bounds_storage.lock().unwrap().clone();
-            let res = TempAndBounds {
+            let res = TemperatureAndBounds {
                 t: temp,
                 b: bounds,
             };
