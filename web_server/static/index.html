@@ -32,7 +32,7 @@
         const newUpperBound = document.getElementById('new-upper-bound').value;
 
         // Construct the URL with query parameters
-        const apiUrl = `http://your-api-url/bounds-endpoint?lower=${newLowerBound}&upper=${newUpperBound}`;
+        const apiUrl = `http://localhost:8081/bounds?lower=${newLowerBound}&upper=${newUpperBound}`;
 
         // Send the updated bounds to the API using the modified URL
         fetch(apiUrl, {

@@ -39,6 +39,9 @@ async fn update_bounds(new_bounds: Bounds, bounds_storage: Arc<Mutex<Bounds>>) -
     let mut bounds = bounds_storage.lock().unwrap();
     bounds.lower = new_bounds.lower;
     bounds.upper = new_bounds.upper;
+    if cfg!(feature = "dev") {
+        println!("Bounds updated. Lower: {}, upper: {}", bounds.lower, bounds.upper);
+    }
     Ok(warp::reply::json(&"Updated bounds successfully".to_string()))
 }
 
@@ -70,14 +73,15 @@ async fn main() {
                 b: bounds,
             };
             warp::reply::json(&res)
-        }).with(cors);
+        }).with(&cors);
 
     let bounds_route =
         warp::path("bounds") // Match path /bounds
         .and(warp::post()) // Match POST requests
         .and(warp::query::<Bounds>()) // Extract query parameters as an instance of Bounds
         .and(with_bounds_storage(bounds_storage_clone)) // Inject bounds_storage_clone pointer into the handler
-        .and_then(update_bounds); // Call update_bounds
+        .and_then(update_bounds)
+        .with(&cors); // Call update_bounds
 
     // Create filter to clone bounds_storage pointer and so it can be handed to the handler
     fn with_bounds_storage(bounds_storage: Arc<Mutex<Bounds>>)
