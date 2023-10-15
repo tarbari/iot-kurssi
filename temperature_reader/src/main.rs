@@ -1,3 +1,4 @@
+// TODO: Maybe implement real http status codes... Found in warp::http::StatusCode
 mod env_loader;
 mod models;
 
@@ -70,13 +71,16 @@ async fn main() {
             warp::reply::json(&res)
         });
 
-    let bounds_route = warp::path("bounds")
-        .and(warp::post())
-        .and(warp::query::<Bounds>())
-        .and(with_bounds_storage(bounds_storage_clone))
-        .and_then(update_bounds);
-    fn with_bounds_storage(bounds_storage: Arc<Mutex<Bounds>>, )
-                           -> impl Filter<Extract = (Arc<Mutex<Bounds>>,), Error = std::convert::Infallible> + Clone {
+    let bounds_route =
+        warp::path("bounds") // Match path /bounds
+        .and(warp::post()) // Match POST requests
+        .and(warp::query::<Bounds>()) // Extract query parameters as an instance of Bounds
+        .and(with_bounds_storage(bounds_storage_clone)) // Inject bounds_storage_clone pointer into the handler
+        .and_then(update_bounds); // Call update_bounds
+
+    // Create filter to clone bounds_storage pointer and so it can be handed to the handler
+    fn with_bounds_storage(bounds_storage: Arc<Mutex<Bounds>>)
+        -> impl Filter<Extract = (Arc<Mutex<Bounds>>,), Error = std::convert::Infallible> + Clone {
         warp::any().map(move || bounds_storage.clone())
     }
 
