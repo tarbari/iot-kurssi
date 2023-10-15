@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lämpötilakikkare</title>
+</head>
+<body>
+<div>
+    <h1>Lämpötila: <span id="temperature"></span></h1>
+    <h2>Alaraja: <span id="lower-bound"></span></h2>
+    <h2>Yläraja: <span id="upper-bound"></span></h2>
+
+    <h3>Aseta uudet raja-arvot:</h3>
+    <input type="number" id="new-lower-bound" placeholder="Uusi alaraja">
+    <input type="number" id="new-upper-bound" placeholder="Uusi yläraja">
+    <button onclick="updateBounds()">Päivitä rajat</button>
+</div>
+
+<script>
+    // Fetch and display the temperature and bounds on page load
+    fetch('http://localhost:8081/temperature')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('temperature').textContent = data.t.temperature;
+            document.getElementById('lower-bound').textContent = data.b.lower;
+            document.getElementById('upper-bound').textContent = data.b.upper;
+        });
+
+    function updateBounds() {
+        const newLowerBound = document.getElementById('new-lower-bound').value;
+        const newUpperBound = document.getElementById('new-upper-bound').value;
+
+        // Construct the URL with query parameters
+        const apiUrl = `http://your-api-url/bounds-endpoint?lower=${newLowerBound}&upper=${newUpperBound}`;
+
+        // Send the updated bounds to the API using the modified URL
+        fetch(apiUrl, {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(_ => {
+                // Update the displayed bounds (or handle any error responses from the API)
+                document.getElementById('lower-bound').textContent = newLowerBound;
+                document.getElementById('upper-bound').textContent = newUpperBound;
+            });
+    }
+</script>
+</body>
+</html>

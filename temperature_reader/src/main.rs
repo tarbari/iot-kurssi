@@ -60,6 +60,7 @@ async fn main() {
     });
 
     // API endpoints
+    let cors = warp::reply::with::header("Access-Control-Allow-Origin", "*");
     let temperature_route = warp::path!("temperature")
         .map(move || {
             let temp = temperature_storage.lock().unwrap().clone(); // Easier to clone than to borrow
@@ -69,7 +70,7 @@ async fn main() {
                 b: bounds,
             };
             warp::reply::json(&res)
-        });
+        }).with(cors);
 
     let bounds_route =
         warp::path("bounds") // Match path /bounds
@@ -90,7 +91,7 @@ async fn main() {
         println!("Starting with lower bound: {}", conf.lower_bound);
         println!("Starting with upper bound: {}", conf.upper_bound);
     }
-
+    // TODO: Do I need cors?
     let routes = temperature_route.or(bounds_route);
     warp::serve(routes)
         .run(([0, 0, 0, 0], conf.port))
