@@ -19,7 +19,7 @@
 
 <script>
     // Fetch and display the temperature and bounds on page load
-    fetch('http://localhost:8081/temperature')
+    fetch('http://192.168.1.125:8081/temperature')
         .then(response => response.json())
         .then(data => {
             document.getElementById('temperature').textContent = data.t.temperature;
@@ -32,7 +32,7 @@
         const newUpperBound = document.getElementById('new-upper-bound').value;
 
         // Construct the URL with query parameters
-        const apiUrl = `http://localhost:8081/bounds?lower=${newLowerBound}&upper=${newUpperBound}`;
+        const apiUrl = `http://192.168.1.125:8081/bounds?lower=${newLowerBound}&upper=${newUpperBound}`;
 
         // Send the updated bounds to the API using the modified URL
         // TODO: If the post fails for any reason the website won't tell about it to the user

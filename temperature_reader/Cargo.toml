@@ -11,7 +11,7 @@ dev = []
 dht11 = "0.3.1"
 dotenv = "0.15.0"
 rand = "0.8.5"
-raslib = "0.1.2"
+rppal = "0.15.0"
 serde = { version = "1.0.189", features = ["derive"] }
 tokio = { version = "1.33.0", features = ["full"] }
 warp = "0.3.6"

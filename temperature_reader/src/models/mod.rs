@@ -1,5 +1,5 @@
+use rppal::gpio::OutputPin;
 use serde::{Deserialize, Serialize};
-
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Temperature {
@@ -16,4 +16,11 @@ pub struct Bounds {
 pub struct TemperatureAndBounds {
     pub t: Temperature,
     pub b: Bounds,
+}
+
+// #[derive(Clone)]
+pub struct Leds {
+    pub low: OutputPin,
+    pub high: OutputPin,
+    pub ok: OutputPin,
 }
