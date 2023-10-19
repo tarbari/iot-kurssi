@@ -14,6 +14,13 @@
 - 2x Lora-moduuleja
 - Raspberry Pi 4 (2GB)
 
+#### GPIO
+
+- GPIO 26 -> RX from DHT11
+- 16, 20, 21 -> LED output
+
+---
+
 ### Softat
 
 - Lämpötilan lukija
