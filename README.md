@@ -56,9 +56,11 @@
 - Sytyttää asianmukaisen LEDin
 - Odotetaan .envissä määritelty aika
 
-### Async api
+### API
 
 - Tämä vois olla oma softa, mutta tälleen vältetään tyhjänpäivänen tiedostojen kirjottelu ja lukeminen
+- Lämpötiloja käsitellään i16 tyyppisinä, ja ne ovat celsiusasteen kymmenyksiä
+    - Web-sivulla nämä muutetaan celsiusasteiksi yhden desimaalin tarkkuudella
 
 #### GET `/temperature`
 
@@ -67,9 +69,9 @@
 
 ```json
 {
-  "temperature": 12.34,
-  "lower_bound": 10.23,
-  "upper_bound": 23.45
+  "temperature": 123,
+  "lower_bound": 102,
+  "upper_bound": 234
 }
 ```
 
@@ -78,8 +80,8 @@
 - Query parametreina
 ```json
 {
-  "lower_bound": 12.34,
-  "upper_bound": 23.45
+  "lower_bound": 123,
+  "upper_bound": 234
 }
 ```
 - Tallenna arvot globaaleihin muuttujiin `lower_bound` ja `upper_bound`
@@ -89,4 +91,4 @@
 ## Web-palvelin
 
 - `/` get endpoint
-  - Liipasee get kutsun 
+  - Liipasee get kutsun `/temperature` end-pointtiin ja näyttää sen vastauksen perusteella juttuja
