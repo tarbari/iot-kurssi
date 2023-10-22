@@ -7,7 +7,6 @@ use crate::env_loader::Config;
 use crate::models::{Bounds, Leds, Temperature, TemperatureAndBounds};
 use rppal::gpio::{Gpio, Mode};
 use rppal::hal::Delay;
-// use rppal_dht11::{Dht11, Measurement};
 use rppal_dht11::Dht11;
 use std::error::Error;
 use std::sync::{Arc, Mutex};
@@ -15,28 +14,10 @@ use tokio::time::{sleep, Duration};
 use warp::reply::Json;
 use warp::Filter;
 
-// use rand::Rng;
-
 const LOW_LED: u8 = 16;
 const OK_LED: u8 = 20;
 const HIGH_LED: u8 = 21;
 const TEMP_PIN: u8 = 17;
-
-/*
-fn rand_f32(min: f32, max: f32) -> f32 {
-    let mut rng = rand::thread_rng();
-    rng.gen_range(min..max)
-}
-
-// TODO: Implement real temperature reading here
-fn read_temperature() -> f32 {
-    if cfg!(feature = "dev") {
-        rand_f32(-5.0, 24.0)
-    } else {
-        12.34
-    }
-}
-*/
 
 async fn read_temperature_loop(
     temp_store: Arc<Mutex<Temperature>>,
@@ -46,34 +27,40 @@ async fn read_temperature_loop(
     interval_in_s: u64,
 ) {
     loop {
-        leds.lock().unwrap().low.set_low();
-        leds.lock().unwrap().high.set_low();
-        leds.lock().unwrap().ok.set_low();
-
-        // let temp = read_temperature();
-        // .perform_measurement returns a Measurement type that also has the humidity, but for this
+        // .perform_measurement_with_retries returns a Measurement type that also has the humidity, but for this
         // excercise it is ignored.
         let mut delay = Delay::new();
-        let temp = temp_pin
+        match temp_pin
             .lock()
             .unwrap()
-            .perform_measurement(&mut delay)
-            .unwrap()
-            .temperature;
-        temp_store.lock().unwrap().temperature = temp; // This would need better error handling. Panics if .lock() fails for any reason.
+            .perform_measurement_with_retries(&mut delay, 5)
+        {
+            Ok(measurement) => {
+                // Reset LEDs
+                leds.lock().unwrap().low.set_low();
+                leds.lock().unwrap().high.set_low();
+                leds.lock().unwrap().ok.set_low();
 
-        // Would match statement be better? Nah, this fine.
-        if temp < bounds_store.lock().unwrap().lower {
-            println!("Too cold: {}", temp.to_string());
-            leds.lock().unwrap().low.set_high();
-        } else if temp > bounds_store.lock().unwrap().upper {
-            println!("Too hot: {}", temp.to_string());
-            leds.lock().unwrap().high.set_high();
-        } else {
-            println!("Just perfect: {}", temp.to_string());
-            leds.lock().unwrap().ok.set_high();
+                // Assign temperature and light the correct LED
+                let temp = measurement.temperature;
+                temp_store.lock().unwrap().temperature = temp;
+                if temp < bounds_store.lock().unwrap().lower {
+                    println!("Too cold: {}", temp.to_string());
+                    leds.lock().unwrap().low.set_high();
+                } else if temp > bounds_store.lock().unwrap().upper {
+                    println!("Too hot: {}", temp.to_string());
+                    leds.lock().unwrap().high.set_high();
+                } else {
+                    println!("Just perfect: {}", temp.to_string());
+                    leds.lock().unwrap().ok.set_high();
+                }
+                // TODO: Implement display module
+            }
+            Err(_) => {
+                // Handle errors in reading. The module seems to give a lot of CrcMismatch errors
+                println!("Error reading temperature");
+            }
         }
-
         sleep(Duration::from_secs(interval_in_s)).await;
     }
 }

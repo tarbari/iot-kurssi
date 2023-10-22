@@ -18,18 +18,20 @@
 </div>
 
 <script>
+    // The API handles temperatures in tenths of celsius, so here we divide everything by 10 to display them as full celsius.
+    // And when sending we multiply by 10 for that same reason.
     // Fetch and display the temperature and bounds on page load
     fetch('http://192.168.1.125:8081/temperature')
         .then(response => response.json())
         .then(data => {
-            document.getElementById('temperature').textContent = data.t.temperature;
-            document.getElementById('lower-bound').textContent = data.b.lower;
-            document.getElementById('upper-bound').textContent = data.b.upper;
+            document.getElementById('temperature').textContent = data.t.temperature / 10;
+            document.getElementById('lower-bound').textContent = data.b.lower / 10;
+            document.getElementById('upper-bound').textContent = data.b.upper / 10;
         });
 
     function updateBounds() {
-        const newLowerBound = document.getElementById('new-lower-bound').value;
-        const newUpperBound = document.getElementById('new-upper-bound').value;
+        const newLowerBound = document.getElementById('new-lower-bound').value * 10;
+        const newUpperBound = document.getElementById('new-upper-bound').value * 10;
 
         // Construct the URL with query parameters
         const apiUrl = `http://192.168.1.125:8081/bounds?lower=${newLowerBound}&upper=${newUpperBound}`;
@@ -40,8 +42,8 @@
             .then(response => response.json())
             .then(_ => {
                 // Update the displayed bounds (or handle any error responses from the API)
-                document.getElementById('lower-bound').textContent = newLowerBound;
-                document.getElementById('upper-bound').textContent = newUpperBound;
+                document.getElementById('lower-bound').textContent = newLowerBound / 10;
+                document.getElementById('upper-bound').textContent = newUpperBound / 10;
             });
     }
 </script>

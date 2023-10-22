@@ -9,7 +9,6 @@ dev = []
 
 [dependencies]
 dotenv = "0.15.0"
-rand = "0.8.5"
 rppal = "0.13.0"
 rppal-dht11 = "0.4.0"
 serde = { version = "1.0.189", features = ["derive"] }
