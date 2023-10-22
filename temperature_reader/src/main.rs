@@ -1,22 +1,28 @@
 // TODO: Maybe implement real http status codes... Found in warp::http::StatusCode
+// TODO: When app closes reset the LED pins
 mod env_loader;
 mod models;
 
 use crate::env_loader::Config;
 use crate::models::{Bounds, Leds, Temperature, TemperatureAndBounds};
-use rppal::gpio::Gpio;
+use rppal::gpio::{Gpio, Mode};
+use rppal::hal::Delay;
+// use rppal_dht11::{Dht11, Measurement};
+use rppal_dht11::Dht11;
 use std::error::Error;
 use std::sync::{Arc, Mutex};
 use tokio::time::{sleep, Duration};
 use warp::reply::Json;
 use warp::Filter;
 
-use rand::Rng;
+// use rand::Rng;
 
 const LOW_LED: u8 = 16;
 const OK_LED: u8 = 20;
 const HIGH_LED: u8 = 21;
+const TEMP_PIN: u8 = 17;
 
+/*
 fn rand_f32(min: f32, max: f32) -> f32 {
     let mut rng = rand::thread_rng();
     rng.gen_range(min..max)
@@ -30,11 +36,13 @@ fn read_temperature() -> f32 {
         12.34
     }
 }
+*/
 
 async fn read_temperature_loop(
     temp_store: Arc<Mutex<Temperature>>,
     bounds_store: Arc<Mutex<Bounds>>,
     leds: Arc<Mutex<Leds>>,
+    temp_pin: Arc<Mutex<Dht11>>,
     interval_in_s: u64,
 ) {
     loop {
@@ -42,7 +50,16 @@ async fn read_temperature_loop(
         leds.lock().unwrap().high.set_low();
         leds.lock().unwrap().ok.set_low();
 
-        let temp = read_temperature();
+        // let temp = read_temperature();
+        // .perform_measurement returns a Measurement type that also has the humidity, but for this
+        // excercise it is ignored.
+        let mut delay = Delay::new();
+        let temp = temp_pin
+            .lock()
+            .unwrap()
+            .perform_measurement(&mut delay)
+            .unwrap()
+            .temperature;
         temp_store.lock().unwrap().temperature = temp; // This would need better error handling. Panics if .lock() fails for any reason.
 
         // Would match statement be better? Nah, this fine.
@@ -85,20 +102,25 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let conf: Config = env_loader::load();
 
     // Initialize storage variables
-    let temperature_storage = Arc::new(Mutex::new(Temperature { temperature: 0.0 }));
+    let temperature_storage = Arc::new(Mutex::new(Temperature { temperature: 0 }));
     let bounds_storage = Arc::new(Mutex::new(Bounds {
         lower: conf.lower_bound,
         upper: conf.upper_bound,
     }));
-    let temp_storage_clone = temperature_storage.clone(); // Create a new pointer to the same data for the temp reading loop
-    let bounds_storage_clone = bounds_storage.clone(); // Goes to the update_bounds() function
-    let bounds_storage_check = bounds_storage.clone(); // Goes to the read_temperature_loop() function
-
     let leds = Arc::new(Mutex::new(Leds {
         low: Gpio::new()?.get(LOW_LED)?.into_output(),
         high: Gpio::new()?.get(HIGH_LED)?.into_output(),
         ok: Gpio::new()?.get(OK_LED)?.into_output(),
     }));
+    let temp_pin = Gpio::new()?.get(TEMP_PIN)?.into_io(Mode::Output);
+    let dht11 = Arc::new(Mutex::new(Dht11::new(temp_pin)));
+    let dht11_clone = dht11.clone();
+
+    // TODO: Instead of cloning here, maybe just clone in the function calls.
+    // This would create borrow checker problems that would need solving.
+    let temp_storage_clone = temperature_storage.clone(); // Create a new pointer to the same data for the temp reading loop
+    let bounds_storage_clone = bounds_storage.clone(); // Goes to the update_bounds() function
+    let bounds_storage_check = bounds_storage.clone(); // Goes to the read_temperature_loop() function
     let leds_clone = leds.clone();
 
     // Spawn temperature reading loop
@@ -107,6 +129,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             temp_storage_clone,
             bounds_storage_check,
             leds_clone,
+            dht11_clone,
             conf.interval,
         )
         .await;

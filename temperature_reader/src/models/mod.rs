@@ -3,13 +3,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Temperature {
-    pub temperature: f32,
+    pub temperature: i16,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Bounds {
-    pub lower: f32,
-    pub upper: f32,
+    pub lower: i16,
+    pub upper: i16,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
