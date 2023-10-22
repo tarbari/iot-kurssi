@@ -16,8 +16,14 @@
 
 #### GPIO
 
-- GPIO 26 -> RX from DHT11
-- 16, 20, 21 -> LED output
+| PIN | Destination |
+|-----|-------------|
+| 16  | Low LED     |
+| 17  | DHT11       |
+| 20  | Ok LED      |
+| 21  | High LED    |
+| 23  | Display SCL |
+| 24  | Display SDA |
 
 ---
 
