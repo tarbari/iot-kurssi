@@ -1,41 +1,24 @@
-# SPDX-FileCopyrightText: Tony DiCola
-# SPDX-License-Identifier: CC0-1.0
-
-# Basic example of clearing and drawing pixels on a SSD1306 OLED display.
-# This example and library is meant to work with Adafruit CircuitPython API.
-
 import board
 import displayio
 import adafruit_ssd1306
+import urllib.request
+import json
+import time
 
 
 displayio.release_displays()
 
-# Create the I2C bus interface.
-i2c = board.I2C()  # uses board.SCL and board.SDA
-# i2c = busio.I2C(board.GP1, board.GP0)    # Pi Pico RP2040
+i2c = board.I2C()  # RPi pinnit 2 = SDA ja 3 = SCL
 
-# Create the SSD1306 OLED class.
 display_width = 128
 display_height = 64
 display = adafruit_ssd1306.SSD1306_I2C(display_width, display_height, i2c)
 
-# You can change the I2C address with an addr parameter:
-# display = adafruit_ssd1306.SSD1306_I2C(display_width, display_height, i2c, addr=0x31)
-
-# fills display with black pixels clearing it
-display.fill(0)
-display.show()
-display.text('Hello', 0, 0, 1)
-display.text('World', 0, 10, 1)
-display.show()
-
-# Set a pixel in the origin 0,0 position.
-# display.pixel(0, 0, 1)
-#
-# # Set a pixel in the middle 64, 16 position.
-# display.pixel(64, 16, 1)
-#
-# # Set a pixel in the opposite 127, 31 position.
-# display.pixel(127, 31, 1)
-# display.show()
+while True:
+    temp = json.loads(urllib.request.urlopen("http://127.0.0.1:8081/temperature").read().decode("utf-8"))
+    temp = temp["t"]["temperature"] / 10
+    display.fill(0)
+    display.show()
+    display.text(f"Temperature: {temp}", 0, 0, 1)
+    display.show()
+    time.sleep(10)
