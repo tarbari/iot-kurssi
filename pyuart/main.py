@@ -3,7 +3,7 @@ import urllib.request
 import json
 import time
 
-s = serial.Serial("/dev/serial0", 9600, timeout=1)  # TODO: Check that the serial dev and baud are actually correct
+s = serial.Serial("/dev/serial0", 115200, timeout=1)  # TODO: Check that the serial dev and baud are actually correct
 s.flush()
 
 while True:
