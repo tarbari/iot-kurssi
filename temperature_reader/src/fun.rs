@@ -31,13 +31,13 @@ pub async fn read_temperature_loop(
                 let temp = measurement.temperature;
                 temp_store.lock().unwrap().temperature = temp;
                 if temp < bounds_store.lock().unwrap().lower {
-                    // println!("Too cold: {}", temp.to_string());
+                    println!("Too cold: {}", temp.to_string());
                     leds.lock().unwrap().low.set_high();
                 } else if temp > bounds_store.lock().unwrap().upper {
-                    // println!("Too hot: {}", temp.to_string());
+                    println!("Too hot: {}", temp.to_string());
                     leds.lock().unwrap().high.set_high();
                 } else {
-                    // println!("Just perfect: {}", temp.to_string());
+                    println!("Just perfect: {}", temp.to_string());
                     leds.lock().unwrap().ok.set_high();
                 }
                 // TODO: Implement display module

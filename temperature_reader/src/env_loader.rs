@@ -45,13 +45,13 @@ pub fn load() -> Config {
 
     let interval: u64 = env::var("INTERVAL_IN_S")
         .unwrap_or_else(|_| {
-            println!("Failed to read INTERVAL_IN_S, using default value: 600");
-            "600".to_string()
+            println!("Failed to read INTERVAL_IN_S, using default value: 10");
+            "10".to_string()
         })
         .parse()
         .unwrap_or_else(|_| {
-            println!("Failed to parse INTERVAL_IN_S, using default value: 600");
-            600
+            println!("Failed to parse INTERVAL_IN_S, using default value: 10");
+            10
         });
 
     let port: u16 = env::var("API_PORT")
