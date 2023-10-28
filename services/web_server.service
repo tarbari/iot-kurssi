@@ -1,0 +1,11 @@
+[Unit]
+Description=Web server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/home/mikkop/git_repos/iot-kurssi/web_server/target/release/web_server
+Restart=always
+
+[Install]
+WantedBy=network-online.target

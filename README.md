@@ -123,4 +123,25 @@
 
 ---
 
+## lora_transmitter
 
+- Kielenä Arduino language
+
+- Lukee sarjaporttiin tulleen datan ja lähettää sen vastaanottajalle LoRa-verkon yli
+
+---
+
+## lora_receiver
+
+- Kielenä Arduino language
+
+- Ottaa LoRa-verkossa vastaan viestin ja kirjoittaa sen sarjaporttiin
+
+---
+
+## services
+
+- Kansiossa esimerkit .services tiedostoista systemctl:ää varten
+- Nämä on rakennettu niin, että palvelut käynnistyvät oikeassa järjestyksessä
+
+---

@@ -1,0 +1,10 @@
+[Unit]
+Description=Serial port communication to LoRa module
+After=temperature_reader.service
+
+[Service]
+ExecStart=/home/mikkop/git_repos/iot-kurssi/pyuart/.venv/bin/python /home/mikkop/git_repos/iot-kurssi/pyuart/main.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
