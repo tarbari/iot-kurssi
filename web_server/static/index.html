@@ -21,7 +21,9 @@
     // The API handles temperatures in tenths of celsius, so here we divide everything by 10 to display them as full celsius.
     // And when sending we multiply by 10 for that same reason.
     // Fetch and display the temperature and bounds on page load
-    fetch('http://192.168.1.125:8081/temperature')
+    const serverIp = window.location.hostname;
+
+    fetch(`http://${serverIp}:8081/temperature`)
         .then(response => response.json())
         .then(data => {
             document.getElementById('temperature').textContent = data.t.temperature / 10;
@@ -34,7 +36,7 @@
         const newUpperBound = document.getElementById('new-upper-bound').value * 10;
 
         // Construct the URL with query parameters
-        const apiUrl = `http://192.168.1.125:8081/bounds?lower=${newLowerBound}&upper=${newUpperBound}`;
+        const apiUrl = `http://${serverIp}:8081/bounds?lower=${newLowerBound}&upper=${newUpperBound}`;
 
         // Send the updated bounds to the API using the modified URL
         // TODO: If the post fails for any reason the website won't tell about it to the user
