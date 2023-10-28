@@ -1,3 +1,9 @@
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// !!                                                                          !!
+// !! THIS IS STUPID AND SHOULD BE REPLACED WITH YAML OR SIMILAR CONFIG LOADER !!
+// !!                                                                          !!
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//
 // TODO: Maybe add LED pins here?
 use dotenv::dotenv;
 use std::env;

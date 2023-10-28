@@ -14,7 +14,7 @@ def fetch_temperature():
     try:
         res = urllib.request.urlopen(API_ENDPOINT)
         data = json.loads(res.read().decode("utf-8"))
-        temperature = data["t"]["temperature"] / 10  # Converting to full celsius from tenths
+        temperature = data["t"]["temperature"]  # Remember the "tenths of celsius" thing...
         return temperature
     except Exception:
         # Could use some error logging...

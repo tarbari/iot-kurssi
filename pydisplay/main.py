@@ -18,7 +18,6 @@ while True:
     temp = json.loads(urllib.request.urlopen("http://127.0.0.1:8081/temperature").read().decode("utf-8"))
     temp = temp["t"]["temperature"] / 10
     display.fill(0)
-    display.show()
     display.text(f"Temperature: {temp}", 0, 0, 1)
     display.show()
     time.sleep(10)
