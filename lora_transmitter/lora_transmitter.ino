@@ -1,23 +1,99 @@
-#include "LoRa.h"
+/* Heltec Automation send communication test example
+ *
+ * Function:
+ * 1. Send data from a CubeCell device over hardware 
+ * 
+ * 
+ * this project also realess in GitHub:
+ * https://github.com/HelTecAutomation/ASR650x-Arduino
+ * */
 
-#define LORA_BAND 868E6
+#include "LoRaWan_APP.h"
+#include "Arduino.h"
+
+/*
+ * set LoraWan_RGB to 1,the RGB active in loraWan
+ * RGB red means sending;
+ * RGB green means received done;
+ */
+#ifndef LoraWan_RGB
+#define LoraWan_RGB 0
+#endif
+
+#define RF_FREQUENCY                                868000000 // Hz
+
+#define TX_OUTPUT_POWER                             14        // dBm
+
+#define LORA_BANDWIDTH                              0         // 0 == 125 kHz
+
+#define LORA_SPREADING_FACTOR                       7         // [SF7..SF12]
+#define LORA_CODINGRATE                             1         // [1: 4/5,
+                                                              //  2: 4/6,
+                                                              //  3: 4/7,
+                                                              //  4: 4/8]
+#define LORA_PREAMBLE_LENGTH                        8         // Same for Tx and Rx
+#define LORA_SYMBOL_TIMEOUT                         0         // Symbols
+#define LORA_FIX_LENGTH_PAYLOAD_ON                  false
+#define LORA_IQ_INVERSION_ON                        false
+
+
+#define RX_TIMEOUT_VALUE                            1000
+#define BUFFER_SIZE                                 30 // Define the payload size here
+
+// Sending chars is not optimal. We could just use a int16_t.
+char txpacket[BUFFER_SIZE];
+char rxpacket[BUFFER_SIZE];
+
+static RadioEvents_t RadioEvents;
+
+bool lora_idle=true;
 
 void setup() {
-  Serial.begin(115200);
-  while (!Serial);
-  LoRa.begin(LORA_BAND);
+    Serial.begin(115200);  // Open Serial connection with given baud
+    while (!Serial); // Wait for serial connection. No point in doing anything if there is no data coming in.
+
+    // Initialize the transmitting stuff
+    RadioEvents.TxDone = OnTxDone;  // When done transmitting execute OnTxDone
+    RadioEvents.TxTimeout = OnTxTimeout; // If transmitting timeouts execute OnTxTimeout
+    Radio.Init( &RadioEvents );  // Initialise radio with the previous events
+    Radio.SetChannel( RF_FREQUENCY );
+    Radio.SetTxConfig( MODEM_LORA, TX_OUTPUT_POWER, 0, LORA_BANDWIDTH,
+                                   LORA_SPREADING_FACTOR, LORA_CODINGRATE,
+                                   LORA_PREAMBLE_LENGTH, LORA_FIX_LENGTH_PAYLOAD_ON,
+                                   true, 0, 0, LORA_IQ_INVERSION_ON, 3000 ); 
 }
 
-void loop() {
-  if (Serial.available()) {
-    // Get the data from serial
-    String receivedData = Serial.readStringUntil('\n');
-    int16_t temperature = receivedData.toInt();
-    // Send data through LoRa
-    LoRa.beginPacket();
-    LoRa.write((temperature >> 8) & 0xFF);  // Send the high byte of the temperature
-    LoRa.write(temperature & 0xFF);  // Send the low byte of the temperature
-    LoRa.endPacket();
-    delay(10000);  // 10 sec wait
+
+
+void loop()
+{
+  if(lora_idle == true && Serial.available())
+  {
+    delay(10000);  // When ready, wait 10sec before transmitting the next packet
+
+    // Read serial bus for input. Convert to char*
+    String receivedData = Serial.readStringUntil('\n'); 
+
+    sprintf(txpacket, receivedData.c_str());  // Save receivedData to txpacket buffer
+    Serial.printf("\r\nsending packet \"%s\" , length %d\r\n",txpacket, strlen(txpacket)); // Print stuff..
+    turnOnRGB(COLOR_SEND,0); //change rgb color
+    Radio.Send( (uint8_t *)txpacket, strlen(txpacket) ); //send the package out 
+    lora_idle = false;
   }
+}
+
+// Triggers when Tx is done. Set off LED, print stuff and set lora_idle back to true to make device ready for the next transmit
+void OnTxDone( void )
+{
+  turnOffRGB();
+  Serial.println("TX done......");
+  lora_idle = true;
+}
+
+void OnTxTimeout( void )
+{
+  turnOffRGB();
+  Radio.Sleep( );
+  Serial.println("TX Timeout......");
+  lora_idle = true;
 }
