@@ -50,7 +50,6 @@ bool lora_idle=true;
 
 void setup() {
     Serial.begin(115200);  // Open Serial connection with given baud
-    while (!Serial); // Wait for serial connection. No point in doing anything if there is no data coming in.
 
     // Initialize the transmitting stuff
     RadioEvents.TxDone = OnTxDone;  // When done transmitting execute OnTxDone
