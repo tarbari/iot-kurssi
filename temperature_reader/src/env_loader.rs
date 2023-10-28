@@ -56,13 +56,13 @@ pub fn load() -> Config {
 
     let port: u16 = env::var("API_PORT")
         .unwrap_or_else(|_| {
-            println!("Failed to read API_PORT, using default value: 8080");
-            "8080".to_string()
+            println!("Failed to read API_PORT, using default value: 8081");
+            "8081".to_string()
         })
         .parse()
         .unwrap_or_else(|_| {
-            println!("Failed to parse API_PORT, using default value: 8080");
-            8080
+            println!("Failed to parse API_PORT, using default value: 8081");
+            8081
         });
 
     let lower_bound: i16 = env::var("LOWER_BOUND")

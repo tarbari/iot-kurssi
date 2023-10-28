@@ -29,7 +29,7 @@ def main():
                 # This is not synced with the lora transmitter.
                 # The result is that the serial connection might have more than one temperature value buffered
                 # and the lora module is actually lagging behind the actual readings.
-                s.write(str(temperature + '\n').encode("utf-8"))  
+                s.write(str(temperature).encode("utf-8"))  
             time.sleep(POLL_INTERVAL)
 
 

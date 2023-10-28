@@ -4,6 +4,7 @@ After=temperature_reader.service
 
 [Service]
 ExecStart=/home/mikkop/git_repos/iot-kurssi/pydisplay/.venv/bin/python /home/mikkop/git_repos/iot-kurssi/pydisplay/main.py
+WorkingDirectory=/home/mikkop/git_repos/iot-kurssi/pydisplay/
 Restart=always
 
 [Install]

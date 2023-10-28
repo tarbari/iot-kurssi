@@ -4,7 +4,9 @@ use warp::Filter;
 async fn main() {
     println!("Listening to port 8085");
     let index = warp::path::end()
-        .and(warp::fs::file("static/index.html"))
+        .and(warp::fs::file(
+            "/home/mikkop/git_repos/iot-kurssi/web_server/static/index.html",
+        ))
         .boxed(); // Box the filter to ensure it resolves to a Reply
 
     let routes = index;

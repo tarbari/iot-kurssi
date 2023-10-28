@@ -1,10 +1,10 @@
 [Unit]
 Description=Temperature Reader and API
-After=multi-user.target
+After=network-online.target
 
 [Service]
 ExecStart=/home/mikkop/git_repos/iot-kurssi/temperature_reader/target/release/temperature_reader
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=network-online.target
